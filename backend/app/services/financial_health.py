@@ -2,68 +2,59 @@ from decimal import Decimal
 
 
 class FinancialHealthService:
-
     @staticmethod
     def calculate(
         total_income: Decimal,
         total_expense: Decimal,
     ):
-
+        total_income = Decimal(total_income or 0)
+        total_expense = Decimal(total_expense or 0)
         total_savings = total_income - total_expense
 
-        if total_income == 0:
-            savings_rate = 0
-            expense_ratio = 0
-        else:
-            savings_rate = float(
-                total_savings / total_income * 100
-            )
+        # A score is not meaningful until income has been recorded.
+        if total_income <= 0:
+            return {
+                "score": 0,
+                "grade": "N/A",
+                "total_income": total_income,
+                "total_expense": total_expense,
+                "total_savings": total_savings,
+                "savings_rate": 0.0,
+                "expense_ratio": 0.0,
+                "summary": (
+                    "Record income transactions to calculate your "
+                    "financial health score."
+                ),
+            }
 
-            expense_ratio = float(
-                total_expense / total_income * 100
-            )
+        savings_rate = float(total_savings / total_income * 100)
+        expense_ratio = float(total_expense / total_income * 100)
 
         score = 0
-
-        # Savings Score (70 Marks)
-
         if savings_rate >= 50:
             score += 70
-
         elif savings_rate >= 30:
             score += 55
-
         elif savings_rate >= 20:
             score += 40
-
         elif savings_rate >= 10:
             score += 20
 
-        # Expense Score (30 Marks)
-
         if expense_ratio <= 40:
             score += 30
-
         elif expense_ratio <= 60:
             score += 20
-
         elif expense_ratio <= 80:
             score += 10
 
-        # Grade
-
         if score >= 90:
             grade = "A+"
-
         elif score >= 80:
             grade = "A"
-
         elif score >= 70:
             grade = "B"
-
         elif score >= 60:
             grade = "C"
-
         else:
             grade = "D"
 
@@ -72,7 +63,7 @@ class FinancialHealthService:
             "A": "Excellent financial health.",
             "B": "Good financial health.",
             "C": "Needs improvement.",
-            "D": "High spending. Focus on saving.",
+            "D": "Review your spending and saving habits.",
         }
 
         return {
