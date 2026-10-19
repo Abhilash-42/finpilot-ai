@@ -114,9 +114,7 @@ export default function AddTransactionDialog({
       amount: Number(form.amount),
       transaction_type: form.transaction_type,
       description: form.description.trim() || null,
-      transaction_date: new Date(
-        `${form.transaction_date}T00:00:00`
-      ).toISOString(),
+      transaction_date: `${form.transaction_date}T00:00:00`,
     };
 
     // Only send category for Income/Expense when selected.
