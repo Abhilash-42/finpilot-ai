@@ -45,7 +45,14 @@ class Transaction(BaseModel):
         default=datetime.utcnow,
         nullable=False,
     )
+    @property
+    def account_name(self):
+        return self.account.name if self.account else None
 
+    @property
+    def category_name(self):
+        return self.category.name if self.category else None
+    
     # Relationships
     user: Mapped["User"] = relationship(
         "User",
