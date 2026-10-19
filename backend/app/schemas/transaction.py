@@ -29,6 +29,8 @@ class TransactionResponse(BaseModel):
     id: UUID
     account_id: UUID
     category_id: UUID | None
+    account_name: str | None = None
+    category_name: str | None = None
     amount: Decimal
     transaction_type: TransactionType
     description: str | None
