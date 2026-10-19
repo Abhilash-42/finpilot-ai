@@ -1,7 +1,8 @@
+
 from uuid import UUID
 from datetime import datetime
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.models.transaction import Transaction
 from app.schemas.transaction import TransactionCreate, TransactionUpdate
@@ -11,10 +12,14 @@ class TransactionRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def create(self, user_id: UUID, transaction_data: TransactionCreate) -> Transaction:
+    def create(
+        self,
+        user_id: UUID,
+        transaction_data: TransactionCreate,
+    ) -> Transaction:
         transaction = Transaction(
             user_id=user_id,
-            **transaction_data.model_dump()
+            **transaction_data.model_dump(),
         )
 
         self.db.add(transaction)
@@ -26,6 +31,10 @@ class TransactionRepository:
     def get_all(self, user_id: UUID):
         return (
             self.db.query(Transaction)
+            .options(
+                joinedload(Transaction.account),
+                joinedload(Transaction.category),
+            )
             .filter(Transaction.user_id == user_id)
             .order_by(Transaction.transaction_date.desc())
             .all()
@@ -34,6 +43,10 @@ class TransactionRepository:
     def get_by_id(self, transaction_id: UUID, user_id: UUID):
         return (
             self.db.query(Transaction)
+            .options(
+                joinedload(Transaction.account),
+                joinedload(Transaction.category),
+            )
             .filter(
                 Transaction.id == transaction_id,
                 Transaction.user_id == user_id,
@@ -63,6 +76,10 @@ class TransactionRepository:
     def get_by_account(self, account_id: UUID, user_id: UUID):
         return (
             self.db.query(Transaction)
+            .options(
+                joinedload(Transaction.account),
+                joinedload(Transaction.category),
+            )
             .filter(
                 Transaction.account_id == account_id,
                 Transaction.user_id == user_id,
@@ -74,6 +91,10 @@ class TransactionRepository:
     def get_by_category(self, category_id: UUID, user_id: UUID):
         return (
             self.db.query(Transaction)
+            .options(
+                joinedload(Transaction.account),
+                joinedload(Transaction.category),
+            )
             .filter(
                 Transaction.category_id == category_id,
                 Transaction.user_id == user_id,
@@ -90,6 +111,10 @@ class TransactionRepository:
     ):
         return (
             self.db.query(Transaction)
+            .options(
+                joinedload(Transaction.account),
+                joinedload(Transaction.category),
+            )
             .filter(
                 Transaction.user_id == user_id,
                 Transaction.transaction_date >= start_date,
