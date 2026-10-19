@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 
 import {
@@ -185,24 +186,37 @@ export default function Transactions() {
     )}`;
   };
 
+  // Format the calendar date without converting it to UTC.
   const formatDate = (date) => {
     if (!date) return "-";
 
-    return new Date(date).toLocaleDateString(
-      "en-IN",
-      {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      }
-    );
+    const datePart = String(date).split("T")[0];
+    const [year, month, day] = datePart
+      .split("-")
+      .map(Number);
+
+    if (!year || !month || !day) {
+      return "-";
+    }
+
+    return new Date(
+      year,
+      month - 1,
+      day
+    ).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
   };
+
+  // ----------------------------------------
+  // RENDER
+  // ----------------------------------------
 
   return (
     <div className="p-8">
-      {/* ---------------------------------- */}
       {/* HEADER */}
-      {/* ---------------------------------- */}
 
       <div className="flex items-center justify-between mb-8">
         <div>
@@ -224,9 +238,7 @@ export default function Transactions() {
         </button>
       </div>
 
-      {/* ---------------------------------- */}
       {/* ADD DIALOG */}
-      {/* ---------------------------------- */}
 
       <AddTransactionDialog
         open={showAddDialog}
@@ -235,9 +247,7 @@ export default function Transactions() {
         isSaving={saving}
       />
 
-      {/* ---------------------------------- */}
       {/* EDIT DIALOG */}
-      {/* ---------------------------------- */}
 
       <EditTransactionDialog
         open={showEditDialog}
@@ -253,9 +263,7 @@ export default function Transactions() {
         isSaving={saving}
       />
 
-      {/* ---------------------------------- */}
       {/* ERROR */}
-      {/* ---------------------------------- */}
 
       {error && (
         <div className="mb-6 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
@@ -263,9 +271,7 @@ export default function Transactions() {
         </div>
       )}
 
-      {/* ---------------------------------- */}
       {/* LOADING */}
-      {/* ---------------------------------- */}
 
       {loading && (
         <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
@@ -275,9 +281,7 @@ export default function Transactions() {
         </div>
       )}
 
-      {/* ---------------------------------- */}
       {/* EMPTY */}
-      {/* ---------------------------------- */}
 
       {!loading &&
         !error &&
@@ -289,9 +293,7 @@ export default function Transactions() {
           </div>
         )}
 
-      {/* ---------------------------------- */}
       {/* TABLE */}
-      {/* ---------------------------------- */}
 
       {!loading && transactions.length > 0 && (
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
@@ -346,6 +348,7 @@ export default function Transactions() {
                       className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50 transition"
                     >
                       {/* Description */}
+
                       <td className="px-6 py-4">
                         <p className="font-medium text-slate-900">
                           {transaction.description ||
@@ -354,18 +357,19 @@ export default function Transactions() {
                       </td>
 
                       {/* Category */}
+
                       <td className="px-6 py-4 text-slate-600 capitalize">
-                        {transaction.category_name ||
-                          "-"}
+                        {transaction.category_name || "-"}
                       </td>
 
                       {/* Account */}
+
                       <td className="px-6 py-4 text-slate-600">
-                        {transaction.account_name ||
-                          "-"}
+                        {transaction.account_name || "-"}
                       </td>
 
                       {/* Type */}
+
                       <td className="px-6 py-4">
                         <span
                           className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${
@@ -376,12 +380,12 @@ export default function Transactions() {
                               : "bg-red-100 text-red-700"
                           }`}
                         >
-                          {transaction.transaction_type ||
-                            "-"}
+                          {transaction.transaction_type || "-"}
                         </span>
                       </td>
 
                       {/* Date */}
+
                       <td className="px-6 py-4 text-slate-600">
                         {formatDate(
                           transaction.transaction_date
@@ -389,6 +393,7 @@ export default function Transactions() {
                       </td>
 
                       {/* Amount */}
+
                       <td
                         className={`px-6 py-4 text-right font-semibold ${
                           isIncome
@@ -404,32 +409,26 @@ export default function Transactions() {
                           ? ""
                           : "-"}
 
-                        {formatAmount(
-                          transaction.amount
-                        )}
+                        {formatAmount(transaction.amount)}
                       </td>
 
                       {/* Actions */}
+
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
-                          {/* Edit */}
                           <button
                             type="button"
                             onClick={() =>
-                              handleEditClick(
-                                transaction
-                              )
+                              handleEditClick(transaction)
                             }
                             disabled={
-                              deletingId ===
-                              transaction.id
+                              deletingId === transaction.id
                             }
                             className="px-3 py-2 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-sm font-medium"
                           >
                             Edit
                           </button>
 
-                          {/* Delete */}
                           <button
                             type="button"
                             onClick={() =>
@@ -438,13 +437,11 @@ export default function Transactions() {
                               )
                             }
                             disabled={
-                              deletingId ===
-                              transaction.id
+                              deletingId === transaction.id
                             }
                             className="px-3 py-2 rounded-md border border-red-200 text-red-600 hover:bg-red-50 transition text-sm font-medium"
                           >
-                            {deletingId ===
-                            transaction.id
+                            {deletingId === transaction.id
                               ? "Deleting..."
                               : "Delete"}
                           </button>
